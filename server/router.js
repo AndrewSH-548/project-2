@@ -11,11 +11,11 @@ const router = (app) => {
 
   app.get('/logout', mid.requiresLogin, controllers.Account.logout);
 
-  app.get('/maker', mid.requiresLogin, controllers.Domo.makerPage);
-  app.post('/maker', mid.requiresLogin, controllers.Domo.makeDomo);
-  app.delete('/maker', mid.requiresLogin, controllers.Domo.deleteDomo);
+  app.get('/maker', mid.requiresLogin, controllers.Enemy.makerPage);
+  app.post('/maker', mid.requiresLogin, controllers.Enemy.makeEnemy);
+  app.delete('/maker', mid.requiresLogin, controllers.Enemy.deleteEnemy);
 
-  app.get('/getDomos', mid.requiresLogin, controllers.Domo.getDomos);
+  app.get('/getEnemies', mid.requiresLogin, controllers.Enemy.getEnemies);
 };
 
 module.exports = router;

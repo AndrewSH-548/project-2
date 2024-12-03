@@ -1,111 +1,102 @@
 const helper = require('./helper.js');
 const React = require('react');
-const { useState, useEffect } = React;
-const {createRoot} = require('react-dom/client');
+const { useState } = React;
+const { createRoot } = require('react-dom/client');
 
-const handleDomo = (e, onDomoAdded) => {
+const constructAccessories = form => {
+    if (!form) return [];
+}
+
+const submitEnemyData = e => {
     e.preventDefault();
-    helper.hideError();
 
-    const name = e.target.querySelector('#domoName').value;
-    const age = e.target.querySelector('#domoAge').value;
-    const eyeColor = e.target.querySelector('#domoEyeColor').value;
+    const name = e.target.querySelector('#enemy-name').value;
+    const type = e.target.querySelector('#enemy-type').value;
+    const color = e.target.querySelector('#enemy-color').value;
+    const accessories = constructAccessories(e.target.querySelector('#enemy-accessories'));
 
-    if (!(name && age && eyeColor)) {
-        helper.handleError('All fields are required!');
+    if (!(name && type && color)) {
         return false;
     }
 
-    helper.sendPost(e.target.action, {name, age, eyeColor}, onDomoAdded);
-    return false;
+    helper.sendPost(e.target.action, {name, type, color, accessories})
 }
 
-const deleteDomo = (e, id, onDelete) => {
-    e.preventDefault();
-    helper.hideError();
+const setColorSelect = (type) => {
+    const colorSelect = document.querySelector("#color-select");
 
-    if (!id){
-        helper.handleError('No id found!');
-        return false;
+    switch (type){
+        case "goomba":
+            colorSelect.innerHTML = `<select id='enemy-color' name='color'>
+                <option value="brown" selected>Brown</option>
+                <option value="green">Green</option>
+                <option value="navyblue">Navy Blue</option>
+            </select>`
+            break;
+        case "koopa":
+            colorSelect.innerHTML = `<select id='enemy-color' name='color'>
+            <option value="red">Red</option>
+            <option value="green" selected>Green</option>
+            <option value="purple">Purple</option>
+            <option value="blue">Blue</option>
+            </select>`
+            break;
+        case "bob-omb":
+            colorSelect.innerHTML = `<select id='enemy-color' name='color'>
+            <option value="black" selected>Black</option>
+            <option value="pink">Pink</option>
+            <option value="purple">Purple</option>
+            <option value="red">Red</option>
+            </select>`
+            break;
+        case "boo":
+            colorSelect.innerHTML = `<select id='enemy-color' name='color'>
+            <option value="white" selected>White</option>
+            <option value="beige">Beige</option>
+            <option value="purple">Purple</option>
+            <option value="green">Green</option>
+            </select>`
+            break;
     }
-
-    helper.sendDelete('/maker', {id}, onDelete);
-    return false;
 }
 
-const DomoForm = props => {
-    return <form id="domoForm"
-        onSubmit={e => handleDomo(e, props.triggerReload)}
-        name="domoForm"
-        action="/maker"
-        method='POST'
-        className='domoForm' 
-    >
-        <label htmlFor="name">Name: </label>
-        <input type="text" id="domoName" name="name" placeholder="Domo Name" />
-        <label htmlFor="age">Age: </label>
-        <input type="number" id="domoAge" name="age" min="0" />
-        <label htmlFor="eyeColor">Eye Color: </label>
-        <select id="domoEyeColor" name="eyeColor">
-            <option>Red</option>
-            <option>Black</option>
-            <option>Blue</option>
-            <option>Gray</option>
-            <option>Brown</option>
-        </select>
-        <input type="submit" className="makeDomoSubmit" value="Make Domo" />
-    </form>;
+const EnemyTypeSelect = () => {
+    return <select id='enemy-type' name='enemy-type' onChange={e => { setColorSelect(e.target.value); }}>
+        <option value="default" selected>Select Enemy Type</option>
+        <option value="goomba">Goomba</option>
+        <option value="koopa">Koopa</option>
+        <option value="bob-omb">Bob-omb</option>
+        <option value="boo">Boo</option>
+    </select>
 }
 
-const DomoList = props => {
-    const [domos, setDomos] = useState(props.domos);
+const AccessorySelect = () => {
 
-    useEffect(() => {
-        const loadDomosFromServer = async () => {
-            const response = await fetch('/getDomos');
-            const data = await response.json();
-            setDomos(data.domos);
-        };
-        loadDomosFromServer();
-    }, [props.reloadDomos]);
+}
 
-    if (domos.length === 0) {
-        return <div className="domoList">
-            <h3 className="emptyDomo">No Domos Yet!</h3>
-        </div>;
-    };
-
-    const domoNodes = domos.map(domo => {
-        return <div key={domo._id} className="domo">
-            <img src="/assets/img/domoface.jpeg" alt="domo face" className="domoFace" />
-            <h3 className="domoName">Name: {domo.name}</h3>
-            <h3 className="domoAge">Age: {domo.age}</h3>
-            <h3 className="domoEyeColor">Eye Color: {domo.eyeColor}</h3>
-            <button onClick={ e => { deleteDomo(e, domo._id, props.triggerReload);} }>Delete</button>
+const EnemyForm = (submitFunction) => {
+    return <form 
+    action='/maker' 
+    method='POST' 
+    onSubmit={ e => submitEnemyData(e)}>
+        <label for='name'>Name:</label>
+        <input type='text' id='enemy-name' name='name'></input>
+        <EnemyTypeSelect/>
+        <div id='color-select'>
         </div>
-    });
-
-    return <div className="domoList">
-        {domoNodes}
-    </div>
-};
+        <input type="submit" value="Create your enemy!" />
+    </form>
+}
 
 const App = () => {
-    const [reloadDomos, setReloadDomos] = useState(false);
-
     return <div>
-        <div id="makeDomo">
-            <DomoForm triggerReload={() => setReloadDomos(!reloadDomos)}/>
-        </div>
-        <div id="domos">
-            <DomoList domos={[]} reloadDomos={reloadDomos} triggerReload={() => setReloadDomos(!reloadDomos)}/>
-        </div>
+        <EnemyForm />
     </div>
 }
 
 const init = () => {
     const root = createRoot(document.querySelector('#app'));
-    root.render( <App />);
+    root.render(<App />);
 };
 
 window.onload = init;

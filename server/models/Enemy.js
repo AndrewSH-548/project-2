@@ -3,22 +3,25 @@ const _ = require('underscore');
 
 const setName = (name) => _.escape(name).trim();
 
-const DomoSchema = new mongoose.Schema({
+const EnemySchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
     trim: true,
     set: setName,
   },
-  age: {
-    type: Number,
-    min: 0,
-    required: true,
-  },
-  eyeColor: {
+  type: {
     type: String,
     required: true,
-    trim: true,
+    trim: true
+  },
+  color: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  accessories: {
+    type: Array
   },
   owner: {
     type: mongoose.Schema.ObjectId,
@@ -31,10 +34,12 @@ const DomoSchema = new mongoose.Schema({
   },
 });
 
-DomoSchema.statics.toApi = (doc) => ({
+EnemySchema.statics.toApi = (doc) => ({
   name: doc.name,
-  age: doc.age,
+  type: doc.type,
+  color: doc.color,
+  accessories: doc.accessories
 });
 
-const DomoModel = mongoose.model('Domo', DomoSchema);
-module.exports = DomoModel;
+const EnemyModel = mongoose.model('Enemy', EnemySchema);
+module.exports = EnemyModel;

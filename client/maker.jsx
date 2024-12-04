@@ -4,18 +4,26 @@ const { useState } = React;
 const { createRoot } = require('react-dom/client');
 
 const constructAccessories = form => {
-    if (!form) return [];
+    let accessories = []
+    if (!form) return accessories;
+
+    for (const input of form.children){
+        if (input.tagName.toLowerCase() == 'input' && input.checked) accessories.push(input.name);
+    }
+    return accessories;
 }
 
 const submitEnemyData = e => {
     e.preventDefault();
+    helper.hideError();
 
     const name = e.target.querySelector('#enemy-name').value;
-    const type = e.target.querySelector('#enemy-type').value;
+    const type = e.target.querySelector('#enemy-type').value;  
     const color = e.target.querySelector('#enemy-color').value;
     const accessories = constructAccessories(e.target.querySelector('#enemy-accessories'));
 
     if (!(name && type && color)) {
+        helper.handleError('Name, type and color required!');
         return false;
     }
 
@@ -61,7 +69,7 @@ const setColorSelect = (type) => {
 }
 
 const EnemyTypeSelect = () => {
-    return <select id='enemy-type' name='enemy-type' onChange={e => { setColorSelect(e.target.value); }}>
+    return <select id='enemy-type' name='type' onChange={e => { setColorSelect(e.target.value); }}>
         <option value="default" selected>Select Enemy Type</option>
         <option value="goomba">Goomba</option>
         <option value="koopa">Koopa</option>
@@ -71,7 +79,11 @@ const EnemyTypeSelect = () => {
 }
 
 const AccessorySelect = () => {
-
+    return <div id='enemy-accessories'>
+        <h3>Accessories:</h3>
+        <label for='wings'>Wings</label>
+        <input type='checkbox' name='wings' />
+    </div>
 }
 
 const EnemyForm = (submitFunction) => {
@@ -80,10 +92,11 @@ const EnemyForm = (submitFunction) => {
     method='POST' 
     onSubmit={ e => submitEnemyData(e)}>
         <label for='name'>Name:</label>
-        <input type='text' id='enemy-name' name='name'></input>
+        <input type='text' id='enemy-name' name='name' />
         <EnemyTypeSelect/>
         <div id='color-select'>
         </div>
+        <AccessorySelect/>
         <input type="submit" value="Create your enemy!" />
     </form>
 }
@@ -91,6 +104,7 @@ const EnemyForm = (submitFunction) => {
 const App = () => {
     return <div>
         <EnemyForm />
+        <h1 id='error-message'></h1>
     </div>
 }
 

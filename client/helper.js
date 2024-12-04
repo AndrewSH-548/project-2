@@ -16,6 +16,10 @@ const sendPost = async (url, data, handler) => {
         window.location = result.redirect;
     }
 
+    if (result.error) {
+        handleError(result.error);
+    }
+
     if (handler){
         handler(result);
     }
@@ -36,12 +40,33 @@ const sendDelete = async (url, data, handler) => {
         window.location = result.redirect;
     }
 
+    if (result.error) {
+        handleError(result.error);
+    }
+
     if (handler){
         handler(result);
     }
 }
 
+const getEnemyData = async () => {
+    const response = await fetch('/getEnemies');
+    const data = await response.json();
+    return data;
+}
+
+const handleError = (message) => {
+    document.querySelector("#error-message").innerHTML = message
+}
+
+const hideError = () => {
+    document.querySelector("#error-message").innerHTML = ''
+}
+
 module.exports = {
     sendPost,
-    sendDelete
+    sendDelete,
+    getEnemyData,
+    handleError,
+    hideError
 }

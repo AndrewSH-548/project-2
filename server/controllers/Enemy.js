@@ -4,6 +4,8 @@ const { Enemy } = models;
 
 const makerPage = (req, res) => res.render('app');
 
+const viewerPage = (req, res) => res.render('viewer');
+
 const getEnemies = async (req, res) => {
   try {
     const query = { owner: req.session.account._id };
@@ -57,6 +59,7 @@ const deleteEnemy = async (req, res) => {
 
 module.exports = {
   makerPage,
+  viewerPage,
   makeEnemy,
   getEnemies,
   deleteEnemy,

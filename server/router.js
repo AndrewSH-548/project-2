@@ -16,6 +16,7 @@ const router = (app) => {
   app.delete('/maker', mid.requiresLogin, controllers.Enemy.deleteEnemy);
 
   app.get('/getEnemies', mid.requiresLogin, controllers.Enemy.getEnemies);
+  app.get('/viewer', mid.requiresLogin, controllers.Enemy.viewerPage);
 };
 
 module.exports = router;

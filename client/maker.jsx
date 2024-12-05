@@ -26,8 +26,8 @@ const submitEnemyData = e => {
         helper.handleError('Name, type and color required!');
         return false;
     }
-
-    helper.sendPost(e.target.action, {name, type, color, accessories})
+    
+    helper.sendPost(e.target.action, {name, type, color, accessories}, refreshFields());
 }
 
 const setColorSelect = (type) => {
@@ -68,12 +68,28 @@ const setColorSelect = (type) => {
     }
 }
 
+const refreshFields = () => {
+    document.querySelector("#color-select").innerHTML = '';
+    document.querySelector("#enemy-name").value = '';
+
+    const typeSelect = document.querySelector("#enemy-type");
+    for (let child of typeSelect.children){
+        child.selected = child.value == 'default';
+    }
+
+    const accessorySelect = document.querySelector("#enemy-accessories");
+    for (let child of accessorySelect.children){
+        child.value = false;
+    }
+    helper.handleError("Minion submitted!");
+}
+
 const EnemyTypeSelect = () => {
-    return <select id='enemy-type' name='type' onChange={e => { setColorSelect(e.target.value); }}>
-        <option value="default" selected>Select Enemy Type</option>
+    return <select id='enemy-type' name='type' onChange={e => { setColorSelect(e.target.value); helper.hideError(); }}>
+        <option value="default" selected>Select Species</option>
         <option value="goomba">Goomba</option>
         <option value="koopa">Koopa</option>
-        <option value="bob-omb">Bob-omb</option>
+        {/* <option value="bob-omb">Bob-omb</option> */}
         <option value="boo">Boo</option>
     </select>
 }
@@ -81,8 +97,8 @@ const EnemyTypeSelect = () => {
 const AccessorySelect = () => {
     return <div id='enemy-accessories'>
         <h3>Accessories:</h3>
-        <label for='wings'>Wings</label>
-        <input type='checkbox' name='wings' />
+        <label for='spike-helmet'>Spike Helmet</label>
+        <input type='checkbox' name='spike-helmet'/>
     </div>
 }
 

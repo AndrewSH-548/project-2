@@ -1,6 +1,6 @@
 const helper = require('./helper.js');
 const React = require('react');
-const {useState, useEffect} = React;
+const {useState, useEffect, useRef} = React;
 const {createRoot} = require('react-dom/client');
 
 const calculateOffset = (enemyType, accessory) => {
@@ -23,8 +23,31 @@ const calculateOffset = (enemyType, accessory) => {
     }
 }
 
+const EnemyDrawing = (props) => {
+    const canvasRef = useRef(null);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        const enemyBase = new Image();
+        enemyBase.src = props.url;
+        enemyBase.onload = () => { ctx.drawImage(enemyBase, 0, canvas.height - enemyBase.height); }
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    
+        for(const a of props.accessories){
+            const accessoryImage = new Image();
+            accessoryImage.src = `/assets/img/accessories/${a}.png`;
+            accessoryImage.onload = () => {ctx.drawImage(accessoryImage, 0, 0);}
+        }
+    }, [])
+
+    return <canvas className='enemy-image' ref={canvasRef} width={300} height={500}></canvas>
+}
+
 const MinionViewer = props => {
     const [enemyList, setEnemyList] = useState(props.enemyList);
+    
 
     useEffect(() => {
         const loadEnemiesFromServer = async () => {
@@ -40,26 +63,10 @@ const MinionViewer = props => {
             <h3 className="emptyEnemy">No Enemies Yet!</h3>
         </div>;
     };
-
+    
     const enemyImages = enemyList.map(enemy => {
         return <div key={enemy._id} className="enemy">
-            <img className="enemy-base" src={`/assets/img/${enemy.type}/${enemy.color}.png`} alt={`base enemy: ${enemy.color} ${enemy.type}`}/>
-            {enemy.accessories.map(a => {
-                let style;
-                const offset = calculateOffset(enemy.type, a);
-
-                switch(a){
-                    case "spike-helmet":
-                        style = {
-                            position: 'relative',
-                            right: offset.x,
-                            bottom: offset.y
-                        };
-                    break;
-                }
-                
-                return <img src={`/assets/img/accessories/${a}.png`} id={`${enemy.name}-${a}`} alt={`accessory: ${a}`} style={style}/>
-                })}
+            <EnemyDrawing url={`/assets/img/${enemy.type}/${enemy.color}.png`} accessories={enemy.accessories} />
             <h1>{enemy.name}</h1>
         </div>
     });

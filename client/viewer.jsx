@@ -7,42 +7,76 @@ const calculateOffset = (enemyType, accessory) => {
     switch(enemyType){
         case "goomba":
             switch(accessory){
-                case "spike-helmet": return { x: '167px', y: '140px'};
+                case "spike-helmet": return { x: 27, y: 160 };
             }
             break;
         case "koopa":
             switch(accessory){
-                case "spike-helmet": return { x: '230px', y: '280px'};
+                case "spike-helmet": return { x: 30, y: 60};
             }
             break;
         case "boo":
             switch(accessory){
-                case "spike-helmet": return { x: '180px', y: '120px'};
+                case "spike-helmet": return { x: 47, y: 155};
             }
             break;
     }
 }
 
-const EnemyDrawing = (props) => {
+const EnemyCanvas = (props) => {
     const canvasRef = useRef(null);
+    const enemyList = props.enemyList;
+
+    const marginSize = 40;
+    const cellWidth = 250;
+    const cellHeight = 400;
 
     useEffect(() => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
-        const enemyBase = new Image();
-        enemyBase.src = props.url;
-        enemyBase.onload = () => { ctx.drawImage(enemyBase, 0, canvas.height - enemyBase.height); }
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    
-        for(const a of props.accessories){
-            const accessoryImage = new Image();
-            accessoryImage.src = `/assets/img/accessories/${a}.png`;
-            accessoryImage.onload = () => {ctx.drawImage(accessoryImage, 0, 0);}
+        ctx.fillStyle = 'red';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        
+
+        for (let i = 0; i < enemyList.length; i++){
+            const xPos = marginSize + (i % 4) * (cellWidth + marginSize);
+            const yPos = marginSize + Math.floor(i / 4) * (cellHeight + marginSize);
+
+            //Fill cell
+            ctx.fillStyle = '#FF5800';
+            ctx.fillRect(xPos, yPos, cellWidth, cellHeight);
+
+            //Draw Enemy and Accessories
+            const enemyBase = new Image();
+            enemyBase.src = `/assets/img/${enemyList[i].type}/${enemyList[i].color}.png`;
+            enemyBase.onload = () => { 
+                ctx.drawImage(enemyBase, xPos + 10, yPos + (cellHeight - 10) - enemyBase.height); 
+                for(const a of enemyList[i].accessories){
+                    const accessoryImage = new Image();
+                    accessoryImage.src = `/assets/img/accessories/${a}.png`;
+                    const offset = calculateOffset(enemyList[i].type, a);
+                    accessoryImage.onload = () => {ctx.drawImage(accessoryImage, xPos + offset.x, yPos + offset.y);}
+                }
+            }
+
+            //Draw Name
+            ctx.fillStyle = '#FF874B';
+            ctx.fillRect(xPos, yPos, cellWidth, 60);
+            ctx.fillStyle = '#FFEB93';
+            ctx.font = '40px verdana';
+            ctx.textBaseline = 'top'
+            ctx.fillText(enemyList[i].name, xPos + 10, yPos + 10);
+
+            
         }
     }, [])
 
-    return <canvas className='enemy-image' ref={canvasRef} width={300} height={500}></canvas>
+    return <canvas id='enemy-canvas' ref={canvasRef} 
+    width={(cellWidth * 4) + (marginSize * 5)} 
+    height={(cellHeight + marginSize) * (Math.ceil(enemyList.length / 4)) + marginSize}>
+        
+    </canvas>
 }
 
 const MinionViewer = props => {
@@ -59,20 +93,13 @@ const MinionViewer = props => {
     }, [props.reloadEnemies]);
 
     if (enemyList.length === 0) {
-        return <div className="enemyList">
+        return <div id="enemy-list">
             <h3 className="emptyEnemy">No Enemies Yet!</h3>
         </div>;
     };
-    
-    const enemyImages = enemyList.map(enemy => {
-        return <div key={enemy._id} className="enemy">
-            <EnemyDrawing url={`/assets/img/${enemy.type}/${enemy.color}.png`} accessories={enemy.accessories} />
-            <h1>{enemy.name}</h1>
-        </div>
-    });
 
-    return <div className="enemyList">
-        {enemyImages}
+    return <div id="enemy-list">
+        <EnemyCanvas enemyList={enemyList}/>
     </div>
 }
 

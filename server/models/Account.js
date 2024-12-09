@@ -72,23 +72,35 @@ AccountSchema.statics.authenticate = async (username, password, callback) => {
   }
 };
 
-//Same as the above function, but checks password instead.
-AccountSchema.statics.changePassword = async (username, oldPassword, newPassword, callback) => {
+// Same as the above function, but checks password instead.
+AccountSchema.statics.changePassword = async (_id, oldPassword, newPassword, callback) => {
   try {
-    const doc = await AccountModel.findOneAndReplace({ username }, {password: generateHash(newPassword)} ).exec();
-    if (!doc) {
-      return callback(err);
+    const comparisonDoc = await AccountModel.findOne({ _id}).exec();
+    if (!comparisonDoc) {
+      return callback();
     }
-    
+    console.log(comparisonDoc);
     const match = await bcrypt.compare(oldPassword, doc.password);
-    if (match) {
-      return callback(null, doc);
+    if (!match) {
+      return callback();
     }
-    return callback();
+    const updatePromise = await AccountModel.findOneAndUpdate(
+      { _id },
+      { $set: { password: bcrypt.hash(newPassword, saltRounds) } },
+      { returnDocument: after },
+    ).lean().exec();
+
+    updatePromise.then((doc) => {
+      console.log(doc);
+      if (!doc) {
+        return callback();
+      }
+      return callback(null, doc);
+    })
   } catch (err) {
     return callback(err);
   }
-}
+};
 
 AccountModel = mongoose.model('Account', AccountSchema);
 module.exports = AccountModel;

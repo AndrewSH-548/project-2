@@ -36,7 +36,7 @@ const makeEnemy = async (req, res) => {
       name: newEnemy.name,
       type: newEnemy.type,
       color: newEnemy.color,
-      accessories: newEnemy.accessories
+      accessories: newEnemy.accessories,
     });
   } catch (err) {
     console.log(err);

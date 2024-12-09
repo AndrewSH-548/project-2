@@ -13,15 +13,15 @@ const EnemySchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
   color: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
   accessories: {
-    type: Array
+    type: Array,
   },
   owner: {
     type: mongoose.Schema.ObjectId,
@@ -38,7 +38,7 @@ EnemySchema.statics.toApi = (doc) => ({
   name: doc.name,
   type: doc.type,
   color: doc.color,
-  accessories: doc.accessories
+  accessories: doc.accessories,
 });
 
 const EnemyModel = mongoose.model('Enemy', EnemySchema);

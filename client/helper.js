@@ -18,6 +18,7 @@ const sendPost = async (url, data, handler) => {
 
     if (result.error) {
         handleError(result.error);
+        return;
     }
 
     if (handler){
@@ -63,10 +64,26 @@ const hideError = () => {
     document.querySelector("#error-message").innerHTML = ''
 }
 
+const format = word => {
+    if (word.includes('_')){
+        let wordList = word.split('_');
+        let result = "";
+        for (let w of wordList){
+            result += w[0].toUpperCase() + w.slice(1);
+            if (wordList.indexOf(w) != wordList.length - 1) result += " ";
+        }
+        return result;
+    }
+    else{
+        return word.slice(0, 1).toUpperCase() + word.slice(1);
+    }
+}
+
 module.exports = {
     sendPost,
     sendDelete,
     getEnemyData,
     handleError,
-    hideError
+    hideError,
+    format
 }

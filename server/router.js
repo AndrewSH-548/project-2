@@ -17,6 +17,11 @@ const router = (app) => {
 
   app.get('/getEnemies', mid.requiresLogin, controllers.Enemy.getEnemies);
   app.get('/viewer', mid.requiresLogin, controllers.Enemy.viewerPage);
+
+  app.get('/settings', mid.requiresLogin, controllers.Account.settingsPage);
+  app.post('/changePassword', mid.requiresLogin, controllers.Account.changePassword);
+
+  app.all('*', controllers.Account.page404);
 };
 
 module.exports = router;

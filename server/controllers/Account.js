@@ -1,4 +1,7 @@
+const { reduce } = require('underscore');
 const models = require('../models');
+const path = require('path');
+const { findOneAndUpdate } = require('../models/Enemy');
 
 const { Account } = models;
 
@@ -10,6 +13,14 @@ const logout = (req, res) => {
   req.session.destroy();
   res.redirect('/');
 };
+
+const settingsPage = (req, res) => {
+  res.render('settings');
+}
+
+const page404 = (req, res) => {
+  res.status(404).render('404');
+}
 
 const login = (req, res) => {
   const username = `${req.body.username}`;
@@ -46,10 +57,23 @@ const signup = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  const oldPass = `${req.body.oldPass}`;
+  const newPass = `${req.body.newPass}`;
+
+  if (!(oldPass && newPass)) { return res.status(400).json({ error: 'All fields are required!' }); }
+  return Account.changePassword(req.session.account.username, oldPass, newPass, (err, account) => {
+    if (err || !account) return res.status(401).json({ error: 'Old password is incorrect!' });
+    return res.json({ message: 'Password updated!'});
+  });
+}
+
 module.exports = {
   loginPage,
   login,
   logout,
   signup,
-
+  changePassword,
+  page404,
+  settingsPage,
 };

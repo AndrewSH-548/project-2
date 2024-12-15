@@ -13,10 +13,11 @@ const router = (app) => {
 
   app.get('/maker', mid.requiresLogin, controllers.Enemy.makerPage);
   app.post('/maker', mid.requiresLogin, controllers.Enemy.makeEnemy);
-  app.delete('/maker', mid.requiresLogin, controllers.Enemy.deleteEnemy);
 
   app.get('/getEnemies', mid.requiresLogin, controllers.Enemy.getEnemies);
   app.get('/viewer', mid.requiresLogin, controllers.Enemy.viewerPage);
+  app.delete('/viewer', mid.requiresLogin, controllers.Enemy.deleteEnemy);
+  app.put('/viewer', mid.requiresLogin, controllers.Enemy.updateEnemy);
 
   app.get('/settings', mid.requiresLogin, controllers.Account.settingsPage);
   app.post('/changePassword', mid.requiresLogin, controllers.Account.changePassword);

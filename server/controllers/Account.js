@@ -62,7 +62,7 @@ const changePassword = async (req, res) => {
   return Account.changePassword(req.session.account._id, oldPass, newPass, (err, account) => {
     if (err || !account) {
       console.log(err);
-      return res.status(401).json({ error: 'An error occurred!' });
+      return res.status(401).json({ error: 'Old password is incorrect!' });
     }
     return res.json({ message: 'Password updated!' });
   });

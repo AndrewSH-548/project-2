@@ -8,14 +8,19 @@
 <body> 
   <nav><a href="/login"><img id="logo" src="/assets/img/navbar-icon.png" alt="bowser logo"/></a>
     <div class="navlink"><a href="/logout">Log out</a></div>
-    <div class="navlink"><a href="/maker">Create a Minion</a></div>
-    <div class="navlink"><a href="/viewer">View Minions</a></div>
+    <div class="navlink"><a href="/maker">Employ a Minion</a></div>
+    <div class="navlink"><a href="/viewer">View Your Army</a></div>
   </nav>
   
   <section id="settings">
 
   </section>
-  <h1 id="error-message"></h1>
+  <div id="error-graphic" class="hidden">
+    <img id="dialogue-box" src="/assets/img/dialogue-box.png" alt="dialogue box"/>
+    <label id="error-text"></label>
+    
+  </div>
+  <img id="error-chomp" src="/assets/img/error-chomp.png" alt="error chain chomp"/>
   <script src="/assets/settingsBundle.js"></script>
 </body>
 </html>

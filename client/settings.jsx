@@ -24,7 +24,7 @@ const refreshFields = e => {
     helper.handleError(e.message);
 }
 
-const PasswordChanger = props => {
+const PasswordChanger = () => {
     return <form id="passwordForm"
         name='passwordForm'
         onSubmit={changePassword}

@@ -1,65 +1,30 @@
 const helper = require('./helper.js');
 const React = require('react');
-const { useState, useEffect } = React;
+const { useState, useEffect, useRef } = React;
 const { createRoot } = require('react-dom/client');
+const { EnemyTypeSelect, ColorSelect, AccessorySelect } = require('./components.jsx');
 
-const constructAccessories = form => {
-    let accessories = []
-    if (!form) return accessories;
-
-    for (const input of form.children) {
-        if (input.tagName.toLowerCase() == 'input' && input.checked) accessories.push(input.name);
-    }
-    return accessories;
-}
-
-const submitEnemyData = (e, resetFunction) => {
+const submitEnemyData = (e, resetFunction, id) => {
     e.preventDefault();
     helper.hideError();
 
     const name = e.target.querySelector('#enemy-name').value;
     const type = e.target.querySelector('#enemy-type').value;
+    if (!(name && type)) {
+        helper.handleError('Name, type and color required!');
+        return false;
+    }
+
     const color = e.target.querySelector('#enemy-color').value;
-    const accessories = constructAccessories(e.target.querySelector('#enemy-accessories'));
+    const accessories = helper.constructAccessories(e.target.querySelectorAll('.accessory-checkbox'));
 
     if (!(name && type && color)) {
         helper.handleError('Name, type and color required!');
         return false;
     }
 
-    helper.sendPost(e.target.action, { name, type, color, accessories }, refreshFields(resetFunction));
-}
-
-const ColorSelect = (props) => {
-    let [options, setOptions] = useState(props.options);
-
-    useEffect(() => {
-        switch (props.type) {
-            case "goomba":
-                setOptions(['brown', 'green', 'navy_blue']);
-                break;
-            case "koopa":
-                setOptions(['red', 'green', 'purple', 'blue']);
-                break;
-            case "bob-omb":
-                setOptions(['black', 'pink', 'purple', 'red']);
-                break;
-            case "boo":
-                setOptions(['white', 'beige', 'purple', 'green']);
-                break;
-        }
-    }, props.type);
-
-    if (!props.type) return <></>
-
-    const colorOptions = options.map(o => <option value={o} selected={options.indexOf(o) == 0}>{helper.format(o)}</option>)
-
-    return <>
-        <label for='color'>Color:</label>
-        <select id='enemy-color' name='color'>
-            {colorOptions}
-        </select>
-    </>
+    if (id) helper.sendPut(e.target.action, { id, name, type, color, accessories }, refreshFields(resetFunction));
+    else helper.sendPost(e.target.action, { name, type, color, accessories }, refreshFields(resetFunction));
 }
 
 const refreshFields = (resetEnemyType) => {
@@ -71,41 +36,17 @@ const refreshFields = (resetEnemyType) => {
         child.selected = child.value == 'default';
     }
 
-    const accessorySelect = document.querySelector("#enemy-accessories");
-    for (let child of accessorySelect.children) {
-        child.value = false;
+    const accessorySelect = document.querySelectorAll(".accessory-checkbox");
+    for (let input of accessorySelect) {
+        input.checked = false;
     }
     helper.handleError("Minion submitted!");
 }
 
-const EnemyTypeSelect = props => {
-    return <>
-        <label for='type'>Species:</label>
-        <select id='enemy-type' name='type' onChange={e => { props.setEnemyType(e.target.value); props.setShowColorSelect(true); helper.hideError(); }}>
-            <option value="default" selected>Select Species</option>
-            <option value="goomba">Goomba</option>
-            <option value="koopa">Koopa</option>
-            {/* <option value="bob-omb">Bob-omb</option> */}
-            <option value="boo">Boo</option>
-        </select>
-    </>
-}
-
-const AccessorySelect = () => {
-    return <div id='enemy-accessories'>
-        <h2>Accessories:</h2>
-        <label class="cr-wrapper">
-            <input type='checkbox' name='spike-helmet' />
-            <div class="cr-input"></div>
-            <span>Spike Helmet</span>
-        </label>
-    </div>
-}
-
-const EnemyForm = () => {
+const EnemyForm = selectedEnemy => {
     const [showColorSelect, setShowColorSelect] = useState(false);
     const [enemyType, setEnemyType] = useState(null);
-
+    
     return <form
         action='/maker'
         method='POST'
@@ -114,23 +55,16 @@ const EnemyForm = () => {
         onSubmit={e => submitEnemyData(e, setEnemyType)}>
         <label for='name'>Name:</label>
         <input type='text' id='enemy-name' name='name' />
-        <EnemyTypeSelect setEnemyType={setEnemyType} setShowColorSelect={setShowColorSelect} />
+        <EnemyTypeSelect setEnemyType={setEnemyType} setShowColorSelect={setShowColorSelect} selectedEnemy={selectedEnemy} />
         {showColorSelect && <ColorSelect options={[]} type={enemyType} />}
-        <AccessorySelect />
+        <AccessorySelect accessories={[]}/>
         <input type="submit" className="formSubmit" value="Employ your minion!" />
     </form>
 }
 
-const App = () => {
-    return <div>
-        <EnemyForm />
-        <h1 id='error-message'></h1>
-    </div>
-}
-
 const init = () => {
     const root = createRoot(document.querySelector('#app'));
-    root.render(<App />);
+    root.render(<EnemyForm />);
 };
 
 window.onload = init;

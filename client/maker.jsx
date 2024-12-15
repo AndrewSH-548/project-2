@@ -54,7 +54,7 @@ const EnemyForm = selectedEnemy => {
         className='mainForm'
         onSubmit={e => submitEnemyData(e, setEnemyType)}>
         <label for='name'>Name:</label>
-        <input type='text' id='enemy-name' name='name' />
+        <input type='text' id='enemy-name' name='name' maxLength={11}/>
         <EnemyTypeSelect setEnemyType={setEnemyType} setShowColorSelect={setShowColorSelect} selectedEnemy={selectedEnemy} />
         {showColorSelect && <ColorSelect options={[]} type={enemyType} />}
         <AccessorySelect accessories={[]}/>

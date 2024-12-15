@@ -190,7 +190,8 @@ const MinionViewer = props => {
 
     if (enemyList.length === 0) {
         return <div id="enemy-list">
-            <h1>Your army is empty!</h1>
+            <img src="/assets/img/bowser-404.png" alt="laughing bowser" id="bowser-error"/>
+            <h1>You didn't hire any minions yet, loser!</h1>
         </div>;
     };
 

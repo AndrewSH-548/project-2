@@ -34,7 +34,7 @@ h2 {
 #dialogue-box {
     max-width: 600px;
     left: 60%;
-    bottom: 12rem;
+    bottom: 11rem;
 }
 
 #error-text {
@@ -365,7 +365,7 @@ button.delete-button {
     text-align: center;
 }
 
-#error-page img {
+#bowser-error {
     max-width: 30%;
 }
 

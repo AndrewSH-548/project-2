@@ -72,15 +72,15 @@ const updateEnemy = async (req, res) => {
   };
 
   try {
-    let doc = await Enemy.findOneAndReplace({_id: req.body._id}, enemyData);
-    //let doc = await Enemy.findOne({_id: req.body._id});
+    const doc = await Enemy.findOneAndReplace({ _id: req.body._id }, enemyData);
+    // let doc = await Enemy.findOne({_id: req.body._id});
     console.log(doc);
-    return res.status(201).json({ content: 'Enemy updated!'});
+    return res.status(201).json({ content: 'Enemy updated!' });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: 'An error occurred editing the enemy!'})
+    return res.status(500).json({ error: 'An error occurred editing the enemy!' });
   }
-}
+};
 
 module.exports = {
   makerPage,

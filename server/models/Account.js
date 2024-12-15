@@ -75,31 +75,30 @@ AccountSchema.statics.authenticate = async (username, password, callback) => {
 // Changes the user's password.
 AccountSchema.statics.changePassword = async (_id, oldPassword, newPassword, callback) => {
   try {
-    //User's account must be found before anything else
-    const comparisonDoc = await AccountModel.findOne({ _id}).exec();
+    // User's account must be found before anything else
+    const comparisonDoc = await AccountModel.findOne({ _id }).exec();
     if (!comparisonDoc) {
       return callback();
     }
 
-    //Check if the user correctly typed their old password
+    // Check if the user correctly typed their old password
     const match = await bcrypt.compare(oldPassword, comparisonDoc.password);
     if (!match) {
       return callback();
     }
 
-    //Generates the new password and replaces the old one
+    // Generates the new password and replaces the old one
     const newHash = await bcrypt.hash(newPassword, saltRounds);
     const newDoc = await AccountModel.findOneAndUpdate(
       { _id },
       { $set: { password: newHash } },
       { returnDocument: 'after' },
     ).lean().exec();
-    
+
     if (!newDoc) {
       return callback();
     }
     return callback(null, newDoc);
-    
   } catch (err) {
     return callback(err);
   }
